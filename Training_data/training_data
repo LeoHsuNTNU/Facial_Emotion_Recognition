@@ -1,0 +1,4 @@
+The training data are fer2013 dataset.
+You can get the data via these link
+1. https://drive.google.com/file/d/1ItY6g6DBBQ9Jc5POG2vW-Gglm60MI0s0/view?usp=sharing for 48x48 data, 316 MB.
+2. https://drive.google.com/file/d/1lDjjaQZMCxqXoTOX0BlhHR6-t0xWKuxs/view?usp=sharing for 112x112 data (resized via OpenCV), 2 GB.
