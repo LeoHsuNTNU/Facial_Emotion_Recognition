@@ -204,7 +204,7 @@ class VGG16(tf.Module):
       conv13 = tf.nn.conv2d(relu12, self.conv13_weight, strides=[1, 1, 1, 1], padding='SAME', name='conv13')
       relu13 = tf.nn.relu(tf.nn.bias_add(conv13, self.conv13_bias))
       
-      if self.droupout == 'yes':
+      if self.dropout == 'yes':
           # flatten
           final_conv_shape = tf.shape(relu13)
           final_shape = final_conv_shape[1] * final_conv_shape[2] * final_conv_shape[3]
@@ -224,7 +224,7 @@ class VGG16(tf.Module):
           full3 = tf.add(tf.matmul(relu15, self.full3_weight), self.full3_bias, name = 'full3')
      
       
-      if self.droupout == 'no':
+      if self.dropout == 'no':
           # flatten
           final_conv_shape = tf.shape(relu13)
           final_shape = final_conv_shape[1] * final_conv_shape[2] * final_conv_shape[3]
