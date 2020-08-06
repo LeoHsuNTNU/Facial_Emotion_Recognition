@@ -19,10 +19,15 @@ import argparse
 parser = argparse.ArgumentParser()
 parser.add_argument("--save_name", type=str,default=None, dest='save_name', help="The name of the saved model and training result")
 parser.add_argument("--iteration", type=int,default= None, dest='iteration', help="Setting the iteration number of the training")
+parser.add_argument("--data", type=str,default='fer2013', dest='data', help="Choosing the training data, default for 48x48 data, type resized for 112x112 data.")
 args = parser.parse_args()
 
-
-fh = h5py.File('{0}/Training_data/fer2013.h5'.format(current_path), 'r')
+if args.data == 'fer2013':
+  fh = h5py.File('{0}/Training_data/fer2013.h5'.format(current_path), 'r')
+elif args.data == 'resized':
+  fh = h5py.File('{0}/Training_data/fer2013_112_112.h5'.format(current_path), 'r')
+else:
+  raise valueerror('argument --data: Please type resized or just leave this argument empty')
 
 # emotion_label = {0:'anger', 1:'disgust', 2:'fear', 3:'happiness', 4: 'sadness', 5: 'surprise', 6: 'neutral'}
 trainX = np.array(fh.get('Train/trainX'))
