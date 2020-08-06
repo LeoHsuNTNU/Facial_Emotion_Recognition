@@ -20,15 +20,18 @@ parser = argparse.ArgumentParser()
 parser.add_argument("--save_name", type=str,default=None, dest='save_name', help="The name of the saved model and training result")
 parser.add_argument("--iteration", type=int,default= None, dest='iteration', help="Setting the iteration number of the training")
 parser.add_argument("--data", type=str,default='fer2013', dest='data', help="Choosing the training data, default for 48x48 data, type resized for 112x112 data.")
+parser.add_argument("--enable_dropout", type=bool,default=False, dest='dropout', help="Enable dropout layers or not.")
 args = parser.parse_args()
+enable_dropout = tf.constant(args.dropout, dtype=tf.bool)
+
 
 if args.data == 'fer2013':
   fh = h5py.File('{0}/Training_data/fer2013.h5'.format(current_path), 'r')
 elif args.data == 'resized':
   fh = h5py.File('{0}/Training_data/fer2013_112_112.h5'.format(current_path), 'r')
 else:
-  raise ValueError('argument --data: Please type resized or just leave this argument empty')
-
+  raise valueerror('argument --data: Please type resized or just leave this argument empty')
+  
 # emotion_label = {0:'anger', 1:'disgust', 2:'fear', 3:'happiness', 4: 'sadness', 5: 'surprise', 6: 'neutral'}
 trainX = np.array(fh.get('Train/trainX'))
 trainY = np.array(fh.get('Train/trainY'))
@@ -46,7 +49,7 @@ if len(np.shape(trainX)) < 4:
   testX = np.expand_dims(testX, axis=3)
   print('Expand the channel dimension for TensorFlow')
 
-model = vgg.VGG16(np.shape(trainX), 'Emotion_Recognition', 7, 'no', 'no')
+model = vgg.VGG16(np.shape(trainX), 'Emotion_Recognition', 7, 'no')
 operator = ops.operator()
 optimizer = tf.optimizers.Adam(learning_rate=0.001)
 
@@ -70,40 +73,28 @@ for i in tf.range(iteration):
   rand_index = np.random.choice(len(trainX), size=batch_size, replace=False)
   rand_x = tf.convert_to_tensor(trainX[rand_index], dtype=tf.float32)
   rand_y = tf.convert_to_tensor(trainY[rand_index], dtype=tf.int32) # label
-  temp_train_loss = operator.train(one_hot, model, rand_x, rand_y, optimizer)
+  temp_train_loss = operator.train(model, rand_x, rand_y, optimizer, enable_dropout)
   
   if (i+1) % 20 == 0:
     # Record and print results
-    batch_predictions = operator.predict(model, rand_x)
+    batch_predictions = operator.predict(model, rand_x, False)
     valid_index = np.random.choice(len(trainValY), size=batch_size)
     valid_x = trainValX[valid_index]
     valid_y = trainValY[valid_index]
-    valid_predictions = operator.predict(model, valid_x)
+    valid_predictions = operator.predict(model, valid_x, False)
   
-    if one_hot == 'no':
-      batch_predictions = tf.argmax(batch_predictions, axis=1, output_type=tf.int32)
-      temp_train_acc = tf.reduce_mean(tf.cast(tf.equal(batch_predictions, rand_y), tf.float32))
+    batch_predictions = tf.argmax(batch_predictions, axis=1, output_type=tf.int32)
+    temp_train_acc = tf.reduce_mean(tf.cast(tf.equal(batch_predictions, rand_y), tf.float32))
   
-      valid_predictions = tf.argmax(valid_predictions, axis=1, output_type=tf.int32)
-      temp_valid_acc = tf.reduce_mean(tf.cast(tf.equal(valid_predictions, valid_y), tf.float32))
+    valid_predictions = tf.argmax(valid_predictions, axis=1, output_type=tf.int32)
+    temp_valid_acc = tf.reduce_mean(tf.cast(tf.equal(valid_predictions, valid_y), tf.float32))
       
-      temp_valid_loss = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(logits=operator.predict(model, valid_x), labels=valid_y))
-  
-    elif one_hot == 'yes':
-      batch_predictions = tf.argmax(batch_predictions, axis=1, output_type=tf.int32)
-      labels = tf.argmax(rand_y, axis=1, output_type=tf.int32)
-      temp_train_acc = tf.reduce_mean(tf.cast(tf.equal(batch_predictions, labels), tf.float32))
-  
-      valid_predictions = tf.argmax(valid_predictions, axis=1, output_type=tf.int32)
-      valid_labels = tf.argmax(valid_predictions, axis=1, output_type=tf.int32)
-      temp_valid_acc = tf.reduce_mean(tf.cast(tf.equal(valid_prediction, valid_labels), tf.float32))
-  
-      temp_valid_loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=operator.predict(model, valid_x), labels=valid_y))
+    temp_valid_loss = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(logits=operator.predict(model, valid_x), labels=valid_y))
   
     if temp_train_loss < ini_train_loss:
       ini_train_loss = temp_train_loss
       if temp_valid_loss < ini_valid_loss:
-        tf.saved_model.save(model, model_save_path)  # 存檔
+        tf.saved_model.save(model, model_save_path)
         ini_valid_loss = temp_valid_loss
         saved_iteration = i
   
