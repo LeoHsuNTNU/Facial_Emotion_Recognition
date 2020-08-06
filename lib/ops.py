@@ -19,32 +19,28 @@ class operator():
     return(tf.reduce_mean(tf.cast(tf.equal(preds, self.labels), tf.float32)))
 
   @tf.function
-  def train(self, one_hot, model, inputX, inputY, optimizer):
-    self.one_hot = one_hot
+  def train(self, model, inputX, inputY, optimizer, dropout, dropout_rate=tf.constant(0.2, dtype=tf.float32)):
     self.model = model
     self.inputX = inputX
     self.inputY = inputY
     self.optimizer = optimizer
-
+    self.dropout = dropout
+    self.dropout_rate = dropout_rate
+    
     with tf.GradientTape() as tape:
-      if one_hot == 'no':
-        temp_train_loss = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(logits=self.model(self.inputX), labels=self.inputY))
-      elif one_hot == 'yes':
-        temp_train_loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=self.model(self.inputX), labels=self.inputY))
+        temp_train_loss = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(logits=self.model(self.inputX, dropout, dropout_rate), labels=self.inputY))
     trainable_variables = self.model.train_var()
     grads = tape.gradient(temp_train_loss, trainable_variables) 
-    
-    #print(grads)
     
     optimizer.apply_gradients(zip(grads, trainable_variables))
     
     return(temp_train_loss)
   
   @tf.function
-  def predict(self, model, inputX):
+  def predict(self, model, inputX, enable_dropout):
     self.model = model
     self.inputX = inputX
-
-    predictions = tf.nn.softmax(self.model(self.inputX))
+    
+    predictions = tf.nn.softmax(self.model(self.inputX, False))
 
     return(predictions)
