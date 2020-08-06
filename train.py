@@ -27,7 +27,7 @@ if args.data == 'fer2013':
 elif args.data == 'resized':
   fh = h5py.File('{0}/Training_data/fer2013_112_112.h5'.format(current_path), 'r')
 else:
-  raise valueerror('argument --data: Please type resized or just leave this argument empty')
+  raise ValueError('argument --data: Please type resized or just leave this argument empty')
 
 # emotion_label = {0:'anger', 1:'disgust', 2:'fear', 3:'happiness', 4: 'sadness', 5: 'surprise', 6: 'neutral'}
 trainX = np.array(fh.get('Train/trainX'))
