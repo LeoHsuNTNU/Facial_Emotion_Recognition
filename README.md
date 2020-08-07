@@ -19,6 +19,6 @@ Run
 ```
 python ./test.py --save_name <string> --data <string> --testing_batch <int> --save_test_result <bool>
 ```
-for testing the trained data.
+for testing the trained model.
 
 Choose ```--save_test_result``` for save the testing result or not. If true, it will be saved in the same file which in ```./Training_result```
