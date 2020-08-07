@@ -8,7 +8,7 @@ python ./train.py --save_name <string> --data <string> --iteration <int> --enabl
 ```
 for taining the VGG16 network.
 
-If you want train the data with resized 112x112 dataset (resized via OpenCV), choose ```--data=resized```, if not, just leave it empty. 
+If you want train the network with resized 112x112 dataset (resized via OpenCV), choose ```--data=resized```, if not, just leave it empty. 
 
 If the arrgument ```--enable_dropout=False```, the ```--drop_rate``` arrgument will not work.
 
