@@ -19,7 +19,7 @@ class operator():
     return(tf.reduce_mean(tf.cast(tf.equal(preds, self.labels), tf.float32)))
 
   @tf.function
-  def train(self, model, inputX, inputY, optimizer, dropout, dropout_rate=tf.constant(0.2, dtype=tf.float32)):
+  def train(self, model, inputX, inputY, optimizer, dropout, dropout_rate):
     self.model = model
     self.inputX = inputX
     self.inputY = inputY

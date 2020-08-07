@@ -9,7 +9,7 @@ import weight
 import math
 
 class VGG16(tf.Module):
-  def __init__(self, input_data_shape, DNN_name, target_num, load_weights): #, enable_dropout, dropout_rate=None):
+  def __init__(self, input_data_shape, DNN_name, target_num, load_weights):
     self.input_data_shape = input_data_shape
     self.DNN_name = DNN_name
     self.target_num = target_num
@@ -134,8 +134,8 @@ class VGG16(tf.Module):
     self.input_data = input_data
     self.enable_dropout = enable_dropout
     self.dropout_rate = tf.cond(self.enable_dropout,
-                                 true_fn=lambda: dropout_rate,
-                                 false_fn=lambda: tf.constant(0, dtype=tf.float32)
+                                true_fn=lambda: dropout_rate,
+                                false_fn=lambda: tf.constant(0, dtype=tf.float32)
                                 )
       
     with tf.name_scope('{0}'.format(self.DNN_name)):
