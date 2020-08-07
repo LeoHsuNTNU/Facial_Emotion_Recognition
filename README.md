@@ -1,5 +1,5 @@
 # Facial_Emotion_Recognition
-Classifying the fer2013 facial emotion dataset with tensorflow.
+Classifying the fer2013 facial emotion dataset with TensorFlow. The network is VGG16, constructed with TensorFlow low level api tf.nn.
 
 ## Training
 Run
