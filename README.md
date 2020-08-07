@@ -6,7 +6,7 @@ Run
 ```
 python ./train.py --save_name <string> --data <string> --iteration <int> --enable_dropout <bool> --drop_rate <float>
 ```
-for tain the VGG16 network.
+for taining the VGG16 network.
 
 If you want train the data with resized 112x112 dataset (resized via OpenCV), choose ```--data=resized```, if not, just leave it empty. 
 
