@@ -2,7 +2,7 @@
 Classifying the fer2013 facial emotion dataset with tensorflow.
 
 ## Training
-run
+Run
 ```
 python ./train.py --save_name <string> --data <string> --iteration <int> --enable_dropout <bool> --drop_rate <float>
 ```
@@ -15,7 +15,7 @@ If the arrgument ```--enable_dropout=False```, the ```--drop_rate``` arrgument w
 The trained model wii be saved in ```./saved_model```, and the training process will be saved in ```./Training_result```.
 
 ## Testing
-run
+Run
 ```
 python ./test.py --save_name <string> --data <string> --testing_batch <int> --save_test_result <bool>
 ```
