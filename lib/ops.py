@@ -37,7 +37,7 @@ class operator():
     return(temp_train_loss)
   
   @tf.function
-  def predict(self, model, inputX, enable_dropout):
+  def predict(self, model, inputX):
     self.model = model
     self.inputX = inputX
     

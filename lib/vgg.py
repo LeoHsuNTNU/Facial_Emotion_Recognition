@@ -9,7 +9,7 @@ import weight
 import math
 
 class VGG16(tf.Module):
-  def __init__(self, input_data_shape, DNN_name, target_num, load_weights):
+  def __init__(self, input_data_shape, DNN_name, target_num, load_weights): #, enable_dropout, dropout_rate=None):
     self.input_data_shape = input_data_shape
     self.DNN_name = DNN_name
     self.target_num = target_num
@@ -129,103 +129,8 @@ class VGG16(tf.Module):
         self.full3_weight = Weight.fully_weight('full3_weight', 4096, self.target_num)
         self.full3_bias = Weight.bias('full3_bias', self.target_num, 'truncated_normal')
 
-"""    
-  # 我們必須在tf.function中specifiy input data的shpape(這裡都是None 不受限制)，否則tf.function會把input data的shape定死(也就是在training的時候吃到的shape)，到時再進行testing的時候會出現shape不合的問題(因為testing的時候並不一定會用training時的batch size來做為輸入)
-  @tf.function(autograph=False, input_signature=[tf.TensorSpec(shape=[None, None, None, None], dtype=tf.float32), ])
-  def vgg(self, input_data):  
-    self.input_data = input_data
-
-    with tf.name_scope('{0}'.format(self.DNN_name)):
-      tf.keras.Input(shape=self.input_data_shape)
-      conv1 = tf.nn.conv2d(self.input_data, self.conv1_weight, strides=[1, 1, 1, 1], padding='SAME', name='conv1')
-      relu1 = tf.nn.relu(tf.nn.bias_add(conv1, self.conv1_bias))
-      
-
-      
-      conv2 = tf.nn.conv2d(relu1, self.conv2_weight, strides=[1, 1, 1, 1], padding='SAME', name='conv2')
-      relu2 = tf.nn.relu(tf.nn.bias_add(conv2, self.conv2_bias))
-
-      max_pool1 = tf.nn.max_pool(relu2, ksize=[1, 2, 2, 1],
-                               strides=[1, 2, 2, 1], padding='SAME')
-
-      
-      conv3 = tf.nn.conv2d(max_pool1, self.conv3_weight, strides=[1, 1, 1, 1], padding='SAME', name='conv3')
-      relu3 = tf.nn.relu(tf.nn.bias_add(conv3, self.conv3_bias))
-
-      
-      conv4 = tf.nn.conv2d(relu3, self.conv4_weight, strides=[1, 1, 1, 1], padding='SAME', name='conv4')
-      relu4 = tf.nn.relu(tf.nn.bias_add(conv4, self.conv4_bias))
-      
-      max_pool2 = tf.nn.max_pool(relu4, ksize=[1, 2, 2, 1],
-                               strides=[1, 2, 2, 1], padding='SAME')
-      
-      
-      conv5 = tf.nn.conv2d(max_pool2, self.conv5_weight, strides=[1, 1, 1, 1], padding='SAME', name='conv5')
-      relu5 = tf.nn.relu(tf.nn.bias_add(conv5, self.conv5_bias))
-
-      
-      conv6 = tf.nn.conv2d(relu5, self.conv6_weight, strides=[1, 1, 1, 1], padding='SAME', name='conv6')
-      relu6 = tf.nn.relu(tf.nn.bias_add(conv6, self.conv6_bias))
-
-      
-      conv7 = tf.nn.conv2d(relu6, self.conv7_weight, strides=[1, 1, 1, 1], padding='SAME', name='conv7')
-      relu7 = tf.nn.relu(tf.nn.bias_add(conv7, self.conv7_bias))
-      
-      max_pool3 = tf.nn.max_pool(relu7, ksize=[1, 2, 2, 1],
-                               strides=[1, 2, 2, 1], padding='SAME')
-      
-      
-      conv8 = tf.nn.conv2d(max_pool3, self.conv8_weight, strides=[1, 1, 1, 1], padding='SAME', name='conv8')
-      relu8 = tf.nn.relu(tf.nn.bias_add(conv8, self.conv8_bias))
-
-      
-      conv9 = tf.nn.conv2d(relu8, self.conv9_weight, strides=[1, 1, 1, 1], padding='SAME', name='conv9')
-      relu9 = tf.nn.relu(tf.nn.bias_add(conv9, self.conv9_bias))
-
-      
-      conv10 = tf.nn.conv2d(relu9, self.conv10_weight, strides=[1, 1, 1, 1], padding='SAME', name='conv10')
-      relu10 = tf.nn.relu(tf.nn.bias_add(conv10, self.conv10_bias))
-
-      max_pool4 = tf.nn.max_pool(relu10, ksize=[1, 2, 2, 1],
-                               strides=[1, 2, 2, 1], padding='SAME')
-      
-      
-      conv11 = tf.nn.conv2d(max_pool4, self.conv11_weight, strides=[1, 1, 1, 1], padding='SAME', name='conv11')
-      relu11 = tf.nn.relu(tf.nn.bias_add(conv11, self.conv11_bias))
-
-      
-      conv12 = tf.nn.conv2d(relu11, self.conv12_weight, strides=[1, 1, 1, 1], padding='SAME', name='conv12')
-      relu12 = tf.nn.relu(tf.nn.bias_add(conv12, self.conv12_bias))
-
-      
-      conv13 = tf.nn.conv2d(relu12, self.conv13_weight, strides=[1, 1, 1, 1], padding='SAME', name='conv13')
-      relu13 = tf.nn.relu(tf.nn.bias_add(conv13, self.conv13_bias))
-      
-      # flatten
-      final_conv_shape = tf.shape(relu13)
-      final_shape = final_conv_shape[1] * final_conv_shape[2] * final_conv_shape[3]
-      flat_output = tf.reshape(relu13, [final_conv_shape[0], final_shape])
-          
-          
-      full1 = tf.nn.relu(tf.add(tf.matmul(flat_output, self.full1_weight), self.full1_bias), name = 'full1')
-      relu14 = tf.nn.relu(full1)
-      
-          
-      full2 = tf.add(tf.matmul(relu14, self.full2_weight), self.full2_bias, name = 'full2')
-      relu15 = tf.nn.relu(full2)
-          
-          
-      full3 = tf.add(tf.matmul(relu15, self.full3_weight), self.full3_bias, name = 'full3')
-     
-          
-      
-      return(full3)
-"""
-
-
-  @tf.function(autograph=False, input_signature=[tf.TensorSpec(shape=[None, None, None, None], dtype=tf.float32), 
-tf.TensorSpec(shape=(), dtype=tf.bool)], tf.TensorSpec(shape=(), dtype=tf.float32)])
-  def __call__(self, input_data, enable_dropout, dropout_rate):
+  @tf.function(autograph=False, input_signature=[tf.TensorSpec(shape=[None, None, None, None], dtype=tf.float32), tf.TensorSpec(shape=(), dtype=tf.bool), tf.TensorSpec(shape=(), dtype=tf.float32)])
+  def __call__(self, input_data, enable_dropout, dropout_rate=0):
     self.input_data = input_data
     self.enable_dropout = enable_dropout
     self.dropout_rate = tf.cond(self.enable_dropout,
