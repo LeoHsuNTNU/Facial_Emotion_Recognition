@@ -9,7 +9,7 @@ import weight
 import math
 
 class VGG16(tf.Module):
-  def __init__(self, input_data_shape, DNN_name, target_num, load_weights)#, enable_dropout, dropout_rate=None):
+  def __init__(self, input_data_shape, DNN_name, target_num, load_weights):
     self.input_data_shape = input_data_shape
     self.DNN_name = DNN_name
     self.target_num = target_num
