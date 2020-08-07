@@ -77,11 +77,11 @@ for i in tf.range(iteration):
   
   if (i+1) % 20 == 0:
     # Record and print results
-    batch_predictions = operator.predict(model, rand_x, False)
+    batch_predictions = operator.predict(model, rand_x)
     valid_index = np.random.choice(len(trainValY), size=batch_size)
     valid_x = trainValX[valid_index]
     valid_y = trainValY[valid_index]
-    valid_predictions = operator.predict(model, valid_x, False)
+    valid_predictions = operator.predict(model, valid_x)
   
     batch_predictions = tf.argmax(batch_predictions, axis=1, output_type=tf.int32)
     temp_train_acc = tf.reduce_mean(tf.cast(tf.equal(batch_predictions, rand_y), tf.float32))
