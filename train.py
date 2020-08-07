@@ -20,10 +20,11 @@ parser = argparse.ArgumentParser()
 parser.add_argument("--save_name", type=str,default=None, dest='save_name', help="The name of the saved model and training result")
 parser.add_argument("--iteration", type=int,default= None, dest='iteration', help="Setting the iteration number of the training")
 parser.add_argument("--data", type=str,default='fer2013', dest='data', help="Choosing the training data, default for 48x48 data, type resized for 112x112 data.")
-parser.add_argument("--enable_dropout", type=bool,default=False, dest='dropout', help="Enable dropout layers or not.")
+parser.add_argument("--enable_dropout", type=bool,default=False, dest='dropout', help="Enable dropout layers or not. Default is False.")
+parser.add_argument("--drop_rate", type=float,default=0, dest='drop_rate', help="Define the drop rate. Default is 0 for not enable dropout. When dropout=False, this arrgument will not work.")
 args = parser.parse_args()
 enable_dropout = tf.constant(args.dropout, dtype=tf.bool)
-
+drop_rate = tf.constant(args.droprate, dtype=tf.bool)
 
 if args.data == 'fer2013':
   fh = h5py.File('{0}/Training_data/fer2013.h5'.format(current_path), 'r')
@@ -73,7 +74,7 @@ for i in tf.range(iteration):
   rand_index = np.random.choice(len(trainX), size=batch_size, replace=False)
   rand_x = tf.convert_to_tensor(trainX[rand_index], dtype=tf.float32)
   rand_y = tf.convert_to_tensor(trainY[rand_index], dtype=tf.int32) # label
-  temp_train_loss = operator.train(model, rand_x, rand_y, optimizer, enable_dropout)
+  temp_train_loss = operator.train(model, rand_x, rand_y, optimizer, enable_dropout, drop_rate)
   
   if (i+1) % 20 == 0:
     # Record and print results
