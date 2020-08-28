@@ -4,7 +4,7 @@ Classifying the fer2013 facial emotion dataset with VGG16, which constructed wit
 # Update 2020/08/28
 I change the coding style into custom keras model and custom keras layers, rewriting ./lib/vgg.py and ./lib/ops.py. The custom layers are defined in ./lib/network.py
 
-I added the batch normalization layers in VGG16, the test accuracy increased from 54.47% to 61.55%
+I added the batch normalization layers in VGG16, the test accuracy increased from 54.47% to 61.55% (48x48) data.
 ## Training
 Run
 ```
