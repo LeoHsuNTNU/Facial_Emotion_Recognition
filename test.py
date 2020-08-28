@@ -22,7 +22,7 @@ if args.data == 'fer2013':
 elif args.data == 'resized':
   fh = h5py.File('{0}/Training_data/fer2013_112_112.h5'.format(current_path), 'r')
 else:
-  raise valueerror('argument --data: Please type resized or just leave this argument empty')
+  raise ValueError('argument --data: Please type resized or just leave this argument empty')
 
 testX = np.array(fh.get('Test/testX'))
 testY = np.array(fh.get('Test/testY'))
@@ -42,7 +42,7 @@ for i in tf.range(splited_num):
   test_index = np.arange(start_index, start_index + test_batch)
   batch_testx = tf.convert_to_tensor(testX[test_index], dtype=tf.float32)
   batch_testy = tf.convert_to_tensor(testY[test_index], dtype=tf.int32)
-  test_predictions = reload_model(batch_testx, False)
+  test_predictions = ops.predict(reload_model, batch_testx)
   
   test_predictions = tf.argmax(test_predictions, axis=1, output_type=tf.int32)
   temp_test_acc = tf.reduce_mean(tf.cast(tf.equal(test_predictions, batch_testy), tf.float32))
