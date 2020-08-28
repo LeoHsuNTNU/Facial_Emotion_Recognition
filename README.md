@@ -12,7 +12,7 @@ python ./train.py --save_name <string> --iteration <int> --data <string> --drop_
 ```
 for taining the VGG16 network.
 
-If you want train the network with resized 112x112 dataset (resized via OpenCV), choose ```--data=resized```, if not, just leave it empty. 
+If you want to train the network with resized 112x112 dataset (resized via OpenCV), choose ```--data=resized```, if not, just leave it empty. 
 
 The trained model wii be saved in ```./saved_model```, and the training process will be saved in ```./Training_result```.
 
